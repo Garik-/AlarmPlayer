@@ -14,11 +14,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        AlarmBroadcastReceiver alarm = new AlarmBroadcastReceiver();
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            AlarmBroadcastReceiver alarm = new AlarmBroadcastReceiver();
 
-        long c = System.currentTimeMillis();
-        String filePath = Environment.getExternalStorageDirectory().getPath() + "/1.mp3";
-        alarm.setAlarm(this.getApplicationContext(), c, 0, filePath, 1);
-        alarm.setAlarm(this.getApplicationContext(), c + 1000 * 80, 1000 * 60, filePath, 2);
+            long c = System.currentTimeMillis();
+            String filePath = Environment.getExternalStorageDirectory().getPath() + "/1.mp3";
+            alarm.setAlarm(this.getApplicationContext(), c, 0, filePath, 1);
+            alarm.setAlarm(this.getApplicationContext(), c + 1000 * 80, 1000 * 60, filePath, 2);
+        }
     }
 }

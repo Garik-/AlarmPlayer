@@ -63,7 +63,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
         return intent;
     }
 
-    public void setAlarm(Context context, long triggerAtMillis, long intervalMillis, String filePath, int repeat) {
+    public Integer setAlarm(Context context, long triggerAtMillis, long intervalMillis, String filePath, int repeat) {
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (null != am) {
 
@@ -78,9 +78,13 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
             app.setAlarmCount(uniqueId, 0);
 
             Log.d(GarikApp.TAG, "Set alarm ID " + uniqueId);
+            return uniqueId;
+
         } else {
             Log.e(GarikApp.TAG, "getSystemService ALARM_SERVICE");
         }
+
+        return null;
     }
 
     private void cancelAlarm(Context context, Intent intent, int uniqueId) {
