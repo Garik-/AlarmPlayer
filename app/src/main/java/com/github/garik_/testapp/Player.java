@@ -4,11 +4,10 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.File;
 
-public class Player {
+class Player {
     public void play(Context context, String filepath) {
         Uri music = Uri.fromFile(new File(filepath));
         try {
@@ -24,7 +23,7 @@ public class Player {
             });
 
         } catch (Exception e) {
-            Log.e("garik.djan", "Error default media");
+            Log.e(GarikApp.TAG, "Error default media");
         }
     }
 }

@@ -5,85 +5,96 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.PowerManager;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.util.Log;
-
 
 import java.util.UUID;
 
 public class AlarmBroadcastReceiver extends BroadcastReceiver {
 
-    private static final String LOCK_TAG = "garik.djan";
     private static final String FIELD_PATH = "path";
     private static final String FIELD_ID = "id";
     private static final String FIELD_REPEAT = "repeat";
-
-    private static final String TAG = "garik.djan";
-
+    private static final String FIELD_INTERVAL = "interval";
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        /*PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, LOCK_TAG);
-
-        wl.acquire();*/
 
         context = context.getApplicationContext();
 
         Bundle extras = intent.getExtras();
+        if (null != extras) {
+            PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+            if (null != pm) {
+                PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, GarikApp.TAG);
 
-        int id = extras.getInt(FIELD_ID);
-        int repeat = extras.getInt(FIELD_REPEAT);
-        String filePath = extras.getString(FIELD_PATH);
+                wl.acquire(extras.getLong(FIELD_INTERVAL));
 
-        Log.d(TAG, "Receive alarm ID "+ id);
+                int id = extras.getInt(FIELD_ID);
+                Log.d(GarikApp.TAG, "Receive alarm ID " + id);
 
-        Player mp = new Player();
-        mp.play(context, filePath);
+                Player mp = new Player();
+                mp.play(context, extras.getString(FIELD_PATH));
 
-        GarikApp app = ((GarikApp) context);
-        int count = app.getAlarmCount(id);
-        if (count == repeat) {
-            cancelAlarm(context, intent, id);
+                GarikApp app = ((GarikApp) context);
+
+                if (app.getAlarmCount(id) == extras.getInt(FIELD_REPEAT)) {
+                    cancelAlarm(context, intent, id);
+                }
+
+                wl.release();
+            } else {
+                Log.e(GarikApp.TAG, "getSystemService POWER_SERVICE");
+            }
+        } else {
+            Log.e(GarikApp.TAG, "empty Extras in alarm");
         }
-
-        //wl.release();
     }
 
-    private Intent createIntent(Context context, int id, String filePath, int repeat) {
+    private Intent createIntent(Context context, int id, String filePath, long intervalMillis, int repeat) {
         Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
 
         intent.putExtra(FIELD_ID, id);
         intent.putExtra(FIELD_PATH, filePath);
         intent.putExtra(FIELD_REPEAT, repeat);
+        intent.putExtra(FIELD_INTERVAL, intervalMillis);
 
         return intent;
     }
 
     public void setAlarm(Context context, long triggerAtMillis, long intervalMillis, String filePath, int repeat) {
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if (null != am) {
 
-        int uniqueId = UUID.randomUUID().hashCode();
-        Intent intent = createIntent(context, uniqueId, filePath, repeat);
+            int uniqueId = UUID.randomUUID().hashCode();
+            Intent intent = createIntent(context, uniqueId, filePath, intervalMillis, repeat);
 
-        PendingIntent pi = PendingIntent.getBroadcast(context, uniqueId, intent, 0);
-        am.setRepeating(AlarmManager.RTC_WAKEUP, triggerAtMillis, intervalMillis, pi);
+            PendingIntent pi = PendingIntent.getBroadcast(context, uniqueId, intent, 0);
 
-        GarikApp app = (GarikApp) context;
-        app.setAlarmCount(uniqueId, 0);
+            am.setRepeating(AlarmManager.RTC_WAKEUP, triggerAtMillis, intervalMillis, pi);
 
-        Log.d(TAG, "Set alarm ID "+ uniqueId);
+            GarikApp app = (GarikApp) context;
+            app.setAlarmCount(uniqueId, 0);
+
+            Log.d(GarikApp.TAG, "Set alarm ID " + uniqueId);
+        } else {
+            Log.e(GarikApp.TAG, "getSystemService ALARM_SERVICE");
+        }
     }
 
     private void cancelAlarm(Context context, Intent intent, int uniqueId) {
         PendingIntent sender = PendingIntent.getBroadcast(context, uniqueId, intent, 0);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.cancel(sender);
+        if (null != alarmManager) {
+            alarmManager.cancel(sender);
 
-        GarikApp app = (GarikApp) context;
-        app.removeAlarm(uniqueId);
+            GarikApp app = (GarikApp) context;
+            app.removeAlarm(uniqueId);
 
-        Log.d(TAG, "Cancel alarm ID "+ uniqueId);
+            Log.d(GarikApp.TAG, "Cancel alarm ID " + uniqueId);
+        } else {
+            Log.e(GarikApp.TAG, "getSystemService ALARM_SERVICE");
+        }
     }
 }
