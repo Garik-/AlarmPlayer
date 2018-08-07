@@ -1,12 +1,13 @@
 package com.github.garik_.testapp;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
-import com.github.garik_.testapp.AlarmItemFragment.OnListFragmentInteractionListener;
 import com.github.garik_.testapp.databinding.AlarmsItemBinding;
 
 import java.util.List;
@@ -24,15 +25,32 @@ https://www.androidhive.info/2017/09/android-recyclerview-swipe-delete-undo-usin
         notifyItemInserted(position);
  */
 
-public class MyAlarmItemRecyclerViewAdapter extends RecyclerView.Adapter<MyAlarmItemRecyclerViewAdapter.ViewHolder> {
+public class AlarmListAdapter extends RecyclerView.Adapter<AlarmListAdapter.ViewHolder> {
 
-    private final List<Alarm> mValues;
+    private Context context;
+    private List<Alarm> alarmList;
 
-    private final OnListFragmentInteractionListener mListener;
 
-    public MyAlarmItemRecyclerViewAdapter(List<Alarm> items, OnListFragmentInteractionListener listener) {
-        mValues = items;
-        mListener = listener;
+    public class ViewHolder extends RecyclerView.ViewHolder {
+
+
+        AlarmsItemBinding mBinding;
+        public RelativeLayout viewBackground, viewForeground;
+
+        public ViewHolder(View view) {
+            super(view);
+
+            mBinding = DataBindingUtil.bind(view);
+            viewBackground = view.findViewById(R.id.view_background);
+            viewForeground = view.findViewById(R.id.view_foreground);
+        }
+
+    }
+
+    public AlarmListAdapter(Context context, List<Alarm> alarmList) {
+        this.alarmList = alarmList;
+
+        this.context = context;
     }
 
     @Override
@@ -45,45 +63,19 @@ public class MyAlarmItemRecyclerViewAdapter extends RecyclerView.Adapter<MyAlarm
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
-        holder.mBinding.setAlarm(holder.mItem);
+        final Alarm item = alarmList.get(position);
+        holder.mBinding.setAlarm(item);
 
-
-        holder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-                if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
-                }
-            }
-        });
     }
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return alarmList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-
-        public View mView;
-        public Alarm mItem;
-        AlarmsItemBinding mBinding;
-
-        public ViewHolder(View view) {
-            super(view);
-            mView = view;
-            mBinding = DataBindingUtil.bind(view);
-        }
-
-    }
 
     public void removeItem(int position) {
-        mValues.remove(position);
+        alarmList.remove(position);
         // notify the item removed by position
         // to perform recycler view delete animations
         // NOTE: don't call notifyDataSetChanged()
@@ -91,8 +83,8 @@ public class MyAlarmItemRecyclerViewAdapter extends RecyclerView.Adapter<MyAlarm
     }
 
     public void restoreItem(Alarm item, int position) {
-        mValues.add(position, item);
-        // ncartLotify item added by position
+        alarmList.add(position, item);
+        // notify item added by position
         notifyItemInserted(position);
     }
 }

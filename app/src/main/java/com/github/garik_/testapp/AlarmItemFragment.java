@@ -69,7 +69,7 @@ public class AlarmItemFragment extends Fragment {
             }
 
             DatabaseHandler db = new DatabaseHandler(context);
-            recyclerView.setAdapter(new MyAlarmItemRecyclerViewAdapter(db.getAllAlarms(), mListener));
+            // recyclerView.setAdapter(new AlarmListAdapter(db.getAllAlarms(), mListener));
         }
         return view;
     }

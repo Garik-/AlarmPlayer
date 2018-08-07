@@ -67,7 +67,7 @@ public class Alarm {
     }
 
     public String getTriggerAtDateFormat() {
-        return getFormatDate(this.triggerAtMillis, "dd.MM");
+        return getFormatDate(this.triggerAtMillis, "dd/MM");
     }
 
     public String getTriggerAtTimeFormat() {
