@@ -11,65 +11,22 @@ import com.github.garik_.testapp.databinding.AlarmsItemBinding;
 
 import java.util.List;
 
+/*
+https://www.androidhive.info/2017/09/android-recyclerview-swipe-delete-undo-using-itemtouchhelper/
 
-public class MyAlarmItemRecyclerViewAdapter extends RecyclerView.Adapter<MyAlarmItemRecyclerViewAdapter.ViewHolder> implements IDatabaseHandler {
+// notify the item removed by position
+        // to perform recycler view delete animations
+        // NOTE: don't call notifyDataSetChanged()
+        notifyItemRemoved(position);
+
+
+          // notify item added by position
+        notifyItemInserted(position);
+ */
+
+public class MyAlarmItemRecyclerViewAdapter extends RecyclerView.Adapter<MyAlarmItemRecyclerViewAdapter.ViewHolder> {
 
     private final List<Alarm> mValues;
-
-    @Override
-    public void addAlarm(Alarm alarm) {
-        mValues.add(alarm);
-        notifyDataSetChanged();
-    }
-
-    @Override
-    public Alarm getAlarm(int index) {
-        return mValues.get(index);
-    }
-
-    @Override
-    public List<Alarm> getAllAlarms() {
-        return mValues;
-    }
-
-    @Override
-    public int updateAlarm(Alarm alarm) {
-        int updated = 0;
-
-        for (int i = 0; i < mValues.size(); i++) {
-            Alarm value = this.getAlarm(i);
-
-
-            if (value.getId() == alarm.getId()) {
-                mValues.set(i, alarm);
-                updated = 1;
-
-                notifyDataSetChanged();
-                break;
-            }
-        }
-
-        return updated;
-    }
-
-    @Override
-    public void deleteAlarm(Alarm alarm) {
-        for (int i = 0; i < mValues.size(); i++) {
-            Alarm value = this.getAlarm(i);
-            if (value.getId() == alarm.getId()) {
-
-                mValues.remove(i);
-                notifyDataSetChanged();
-                break;
-            }
-        }
-    }
-
-    @Override
-    public void deleteAll() {
-        mValues.clear();
-        notifyDataSetChanged();
-    }
 
     private final OnListFragmentInteractionListener mListener;
 
@@ -95,6 +52,8 @@ public class MyAlarmItemRecyclerViewAdapter extends RecyclerView.Adapter<MyAlarm
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
@@ -121,5 +80,19 @@ public class MyAlarmItemRecyclerViewAdapter extends RecyclerView.Adapter<MyAlarm
             mBinding = DataBindingUtil.bind(view);
         }
 
+    }
+
+    public void removeItem(int position) {
+        mValues.remove(position);
+        // notify the item removed by position
+        // to perform recycler view delete animations
+        // NOTE: don't call notifyDataSetChanged()
+        notifyItemRemoved(position);
+    }
+
+    public void restoreItem(Alarm item, int position) {
+        mValues.add(position, item);
+        // ncartLotify item added by position
+        notifyItemInserted(position);
     }
 }

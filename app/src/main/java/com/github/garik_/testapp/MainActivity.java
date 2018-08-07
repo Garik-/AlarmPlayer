@@ -2,16 +2,22 @@ package com.github.garik_.testapp;
 
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
+// TODO: посмотри проект https://www.androidhive.info/2017/09/android-recyclerview-swipe-delete-undo-using-itemtouchhelper/  там описана логика работы с данными
 
 public class MainActivity extends AppCompatActivity implements AlarmItemFragment.OnListFragmentInteractionListener {
 
 
     @Override
     public void onListFragmentInteraction(Alarm item) {
-
+        Intent intent = new Intent(this, InsertActivity.class);
+        startActivity(intent);
     }
 
     @SuppressLint("SdCardPath")
@@ -19,6 +25,18 @@ public class MainActivity extends AppCompatActivity implements AlarmItemFragment
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
+
+        FloatingActionButton fab = findViewById(R.id.add_button);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
 
 
         DatabaseHandler db = new DatabaseHandler(this);
