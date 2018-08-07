@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +37,12 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
     public void onCreate(SQLiteDatabase db) {
         String CREATE_ALARMS_TABLE = "CREATE TABLE " + TABLE_ALARMS + "("
                 + FIELD_ID + " INTEGER PRIMARY KEY," + FIELD_PATH + " TEXT,"
-                + FIELD_REPEAT + " INTEGER, " + FIELD_TRIGGER + "INTEGER, "
-                + FIELD_INTERVAL + "INTEGER, " + FIELD_ALARM_ID + "INTEGER " + ")";
+                + FIELD_REPEAT + " INTEGER," + FIELD_TRIGGER + " INTEGER,"
+                + FIELD_INTERVAL + " INTEGER," + FIELD_ALARM_ID + " INTEGER" + ")";
+
+        Log.d(GarikApp.TAG, "Create table");
+        Log.d(GarikApp.TAG, CREATE_ALARMS_TABLE);
+
         db.execSQL(CREATE_ALARMS_TABLE);
     }
 
@@ -73,7 +78,8 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
     @Override
     public List<Alarm> getAllAlarms() {
         List<Alarm> alarmList = new ArrayList<Alarm>();
-        String selectQuery = "SELECT  " + TextUtils.join(",", TABLE_ALARMS_FIELDS) + " FROM " + TABLE_ALARMS;
+        String selectQuery = "SELECT  " + TextUtils.join(", ", TABLE_ALARMS_FIELDS) + " FROM " + TABLE_ALARMS;
+
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -120,7 +126,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
     }
 
     @Override
-    public int updateAlarms(Alarm alarm) {
+    public int updateAlarm(Alarm alarm) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         int result = db.update(TABLE_ALARMS, toValues(alarm), FIELD_ID + " = ?",

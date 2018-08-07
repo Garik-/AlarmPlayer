@@ -52,27 +52,29 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
         }
     }
 
-    private Intent createIntent(Context context, int id, String filePath, long intervalMillis, int repeat) {
+    private Intent createIntent(Context context, Alarm alarm) {
         Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
 
-        intent.putExtra(FIELD_ID, id);
-        intent.putExtra(FIELD_PATH, filePath);
-        intent.putExtra(FIELD_REPEAT, repeat);
-        intent.putExtra(FIELD_INTERVAL, intervalMillis);
+        intent.putExtra(FIELD_ID, alarm.getUniqueId());
+        intent.putExtra(FIELD_PATH, alarm.getFilePath());
+        intent.putExtra(FIELD_REPEAT, alarm.getRepeatCount());
+        intent.putExtra(FIELD_INTERVAL, alarm.getIntervalMillis());
 
         return intent;
     }
 
-    public Integer setAlarm(Context context, long triggerAtMillis, long intervalMillis, String filePath, int repeat) {
+    public Integer setAlarm(Context context, Alarm alarm) {
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (null != am) {
 
             int uniqueId = UUID.randomUUID().hashCode();
-            Intent intent = createIntent(context, uniqueId, filePath, intervalMillis, repeat);
+
+            alarm.setUniqueId(uniqueId);
+            Intent intent = createIntent(context, alarm);
 
             PendingIntent pi = PendingIntent.getBroadcast(context, uniqueId, intent, 0);
 
-            am.setRepeating(AlarmManager.RTC_WAKEUP, triggerAtMillis, intervalMillis, pi);
+            am.setRepeating(AlarmManager.RTC_WAKEUP, alarm.getTriggerAtMillis(), alarm.getIntervalMillis(), pi);
 
             GarikApp app = (GarikApp) context;
             app.setAlarmCount(uniqueId, 0);

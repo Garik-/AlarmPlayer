@@ -9,7 +9,7 @@ public interface IDatabaseHandler {
 
     List<Alarm> getAllAlarms();
 
-    int updateAlarms(Alarm alarm);
+    int updateAlarm(Alarm alarm);
 
     void deleteAlarm(Alarm alarm);
 
