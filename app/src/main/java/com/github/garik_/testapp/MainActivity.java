@@ -42,6 +42,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         mAdapter = new AlarmListAdapter(this, cartList);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+
+        recyclerView.setHasFixedSize(true);
+
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
