@@ -21,30 +21,92 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="?attr/actionBarSize"
-        android:orientation="vertical"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:paddingTop="60dp">
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/input_layout_name"
+        >
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_name"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:hint="test" />
-        </android.support.design.widget.TextInputLayout>
+                android:orientation="horizontal">
 
 
-    </LinearLayout>
+                <Button
+                    android:id="@+id/set_trigerat_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="showDatePickerDialog"
+                    
 
+                    android:text="Дата" />
+
+                <Button
+                    android:id="@+id/set_trigerat_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="showTimePickerDialog"
+
+                    android:text="Время" />
+
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/set_interval_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="showTimePickerDialog"
+
+                android:text="Интервал" />
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/set_repeat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Количество повторений"
+                    android:inputType="number" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/set_filepath"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Файл" />
+
+            </android.support.design.widget.TextInputLayout>
+        </LinearLayout>
+
+
+        <Button
+            android:id="@+id/action_done"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="?attr/colorPrimary"
+            android:onClick="updateAlarm"
+            android:text="Готово"
+            android:textColor="@android:color/white" />
+    </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>

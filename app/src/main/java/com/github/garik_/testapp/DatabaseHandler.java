@@ -16,12 +16,12 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
     private static final String DATABASE_NAME = "AlarmPlayer";
     private static final String TABLE_ALARMS = "alarms";
 
-    private static final String FIELD_ID = "id";
-    private static final String FIELD_PATH = "path";
-    private static final String FIELD_REPEAT = "repeat";
-    private static final String FIELD_TRIGGER = "trigger_at";
-    private static final String FIELD_INTERVAL = "interval";
-    private static final String FIELD_ALARM_ID = "alarm_id";
+    static final String FIELD_ID = "id";
+    static final String FIELD_PATH = "path";
+    static final String FIELD_REPEAT = "repeat";
+    static final String FIELD_TRIGGER = "trigger_at";
+    static final String FIELD_INTERVAL = "interval";
+    static final String FIELD_ALARM_ID = "alarm_id";
 
     private final String[] TABLE_ALARMS_FIELDS;
 
@@ -77,7 +77,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
 
     @Override
     public List<Alarm> getAllAlarms() {
-        List<Alarm> alarmList = new ArrayList<Alarm>();
+        List<Alarm> alarmList = new ArrayList<>();
         String selectQuery = "SELECT  " + TextUtils.join(", ", TABLE_ALARMS_FIELDS) + " FROM " + TABLE_ALARMS;
 
 

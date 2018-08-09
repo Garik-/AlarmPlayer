@@ -1,5 +1,7 @@
 package com.github.garik_.testapp;
 
+import android.os.Bundle;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -74,18 +76,17 @@ public class Alarm {
         return getFormatDate(this.triggerAtMillis, "HH:mm");
     }
 
-    public String getRepeatCountFormat() {
-        StringBuilder sb = new StringBuilder("Повторять " + this.repeatCount + " ");
-        switch (this.plural(new Long(this.repeatCount))) {
-            case 0:
-            case 2:
-                sb.append("раз");
-                break;
-            case 1:
-                sb.append("раза");
-                break;
-        }
-        return sb.toString();
+    public Alarm() {
+
+    }
+
+    public Alarm(String filePath, long triggerAtMillis, long intervalMillis, int repeatCount) {
+        this.id = 0;
+        this.filePath = filePath;
+        this.triggerAtMillis = triggerAtMillis;
+        this.intervalMillis = intervalMillis;
+        this.repeatCount = repeatCount;
+        this.uniqueId = 0;
     }
 
     public Alarm(int id, String filePath, long triggerAtMillis, long intervalMillis, int repeatCount, int uniqueId) {
@@ -97,12 +98,13 @@ public class Alarm {
         this.uniqueId = uniqueId;
     }
 
-    public Alarm(String filePath, long triggerAtMillis, long intervalMillis, int repeatCount) {
-
-        this.filePath = filePath;
-        this.triggerAtMillis = triggerAtMillis;
-        this.intervalMillis = intervalMillis;
-        this.repeatCount = repeatCount;
+    public Alarm(Bundle b) {
+        this.id = b.getInt(DatabaseHandler.FIELD_ID);
+        this.uniqueId = b.getInt(DatabaseHandler.FIELD_ALARM_ID);
+        this.triggerAtMillis = b.getLong(DatabaseHandler.FIELD_TRIGGER);
+        this.intervalMillis = b.getLong(DatabaseHandler.FIELD_INTERVAL);
+        this.filePath = b.getString(DatabaseHandler.FIELD_PATH);
+        this.repeatCount = b.getInt(DatabaseHandler.FIELD_REPEAT);
     }
 
     public String getFilePath() {
@@ -151,5 +153,30 @@ public class Alarm {
 
     public void setRepeatCount(int repeatCount) {
         this.repeatCount = repeatCount;
+    }
+
+    public String getRepeatCountFormat() {
+        StringBuilder sb = new StringBuilder("Повторять " + this.repeatCount + " ");
+        switch (this.plural(Long.valueOf(this.repeatCount))) {
+            case 0:
+            case 2:
+                sb.append("раз");
+                break;
+            case 1:
+                sb.append("раза");
+                break;
+        }
+        return sb.toString();
+    }
+
+    public Bundle toBundle() {
+        Bundle b = new Bundle();
+        b.putInt(DatabaseHandler.FIELD_ID, this.getId());
+        b.putInt(DatabaseHandler.FIELD_ALARM_ID, this.getUniqueId());
+        b.putLong(DatabaseHandler.FIELD_TRIGGER, this.getTriggerAtMillis());
+        b.putLong(DatabaseHandler.FIELD_INTERVAL, this.getIntervalMillis());
+        b.putString(DatabaseHandler.FIELD_PATH, this.getFilePath());
+        b.putInt(DatabaseHandler.FIELD_REPEAT, this.getRepeatCount());
+        return b;
     }
 }

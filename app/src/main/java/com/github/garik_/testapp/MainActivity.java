@@ -2,6 +2,10 @@ package com.github.garik_.testapp;
 
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
@@ -13,6 +17,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -23,17 +28,33 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+
+    static final String ACTION = "action";
+    static final String POSITION = "position";
+    static final int ACTION_UPDATE = 0;
+    static final int ACTION_CREATE = 1;
+
     private RecyclerView recyclerView;
     private List<Alarm> cartList;
     private AlarmListAdapter mAdapter;
     private CoordinatorLayout coordinatorLayout;
 
+    private BroadcastReceiver mActivityReceiver;
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.unregisterReceiver(this.mActivityReceiver);
+    }
 
     @SuppressLint("SdCardPath")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        final Context context = this;
 
         recyclerView = findViewById(R.id.recycler_view);
         coordinatorLayout = findViewById(R.id.coordinator_layout);
@@ -53,8 +74,11 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
             @Override
             public void onClick(View view, int position) {
                 Alarm alarm = cartList.get(position);
-                Snackbar.make(view, "click to item " + alarm.getId(), Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(context, InsertActivity.class);
+                intent.putExtras(alarm.toBundle());
+                intent.putExtra(ACTION, ACTION_UPDATE);
+                intent.putExtra(POSITION, position);
+                startActivity(intent);
             }
 
             @Override
@@ -77,10 +101,22 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(context, InsertActivity.class);
+                intent.putExtra(ACTION, ACTION_CREATE);
+                startActivity(intent);
             }
         });
+
+
+        mActivityReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.d(GarikApp.TAG, "main recive");
+            }
+        };
+
+        IntentFilter filter = new IntentFilter(InsertActivity.BROADCAST_ACTION);
+        this.registerReceiver(mActivityReceiver, filter);
 
         prepareCart();
 
