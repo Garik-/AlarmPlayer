@@ -58,7 +58,7 @@
                     android:layout_weight="1"
                     android:onClick="showTimePickerDialog"
 
-                    android:text="@string/date" />
+                    android:text="@string/time" />
 
 
             </LinearLayout>
