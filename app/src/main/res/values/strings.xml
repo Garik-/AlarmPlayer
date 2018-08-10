@@ -7,5 +7,6 @@
     <string name="interval">Интервал</string>
     <string name="repeatCount">Количество повторений</string>
     <string name="file">Файл</string>
+    <string name="file_error">Файл не существует</string>
     <string name="done">Готово</string>
 </resources>

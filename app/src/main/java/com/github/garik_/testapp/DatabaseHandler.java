@@ -25,12 +25,15 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
 
     private final String[] TABLE_ALARMS_FIELDS;
 
+
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
 
         this.TABLE_ALARMS_FIELDS = new String[]{
                 FIELD_ID, FIELD_PATH, FIELD_TRIGGER, FIELD_INTERVAL, FIELD_REPEAT, FIELD_ALARM_ID
         };
+
+
     }
 
     @Override
@@ -94,6 +97,35 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
             cursor.close();
         }
         db.close();
+
+        return alarmList;
+    }
+
+    public List<Alarm> getNewAlarms(String keys) {
+        List<Alarm> alarmList = new ArrayList<>();
+
+        String selectQuery = "SELECT  " + TextUtils.join(", ", TABLE_ALARMS_FIELDS) + " FROM "
+                + TABLE_ALARMS + " WHERE " + FIELD_TRIGGER + " >= " + System.currentTimeMillis()
+                + (TextUtils.isEmpty(keys) ? "" : " AND " + FIELD_ALARM_ID + " NOT IN (" + keys + ")");
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        Log.d(GarikApp.TAG, selectQuery);
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    Log.d(GarikApp.TAG, cursor.toString());
+
+                    alarmList.add(toAlarm(cursor));
+                } while (cursor.moveToNext());
+            }
+
+            cursor.close();
+        }
+        db.close();
+
 
         return alarmList;
     }

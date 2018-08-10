@@ -65,7 +65,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
 
     public void setAlarm(Context context, Alarm alarm) {
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        if (null != am) {
+        if (null != am && System.currentTimeMillis() <= alarm.getTriggerAtMillis()) {
 
             int uniqueId = UUID.randomUUID().hashCode();
 
@@ -83,7 +83,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
 
 
         } else {
-            Log.e(GarikApp.TAG, "getSystemService ALARM_SERVICE");
+            Log.e(GarikApp.TAG, "getSystemService ALARM_SERVICE or Time < System_time");
         }
 
 
@@ -91,22 +91,29 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
 
     public void cancelAlarm(Context context, Intent intent, int uniqueId) {
 
-        PendingIntent sender = PendingIntent.getBroadcast(context, uniqueId, intent, 0);
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        if (null != alarmManager) {
-            alarmManager.cancel(sender);
+        if (0 != uniqueId) {
+            PendingIntent sender = PendingIntent.getBroadcast(context, uniqueId, intent, 0);
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            if (null != alarmManager) {
+                alarmManager.cancel(sender);
 
-            GarikApp app = (GarikApp) context;
-            app.removeAlarm(uniqueId);
+                GarikApp app = (GarikApp) context;
+                app.removeAlarm(uniqueId);
 
-            Log.d(GarikApp.TAG, "Cancel alarm ID " + uniqueId);
-        } else {
-            Log.e(GarikApp.TAG, "getSystemService ALARM_SERVICE");
+                Log.d(GarikApp.TAG, "Cancel alarm ID " + uniqueId);
+            } else {
+                Log.e(GarikApp.TAG, "getSystemService ALARM_SERVICE");
+            }
         }
     }
 
     public void cancelAlarm(Context context, Alarm alarm) {
-        Intent intent = createIntent(context, alarm);
-        cancelAlarm(context, intent, alarm.getUniqueId());
+
+        if (0 != alarm.getUniqueId()) {
+            Intent intent = createIntent(context, alarm);
+            cancelAlarm(context, intent, alarm.getUniqueId());
+            alarm.setUniqueId(0);
+        }
+
     }
 }

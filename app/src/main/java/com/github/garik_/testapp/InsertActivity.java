@@ -6,6 +6,7 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 
+import java.io.File;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
@@ -132,6 +134,8 @@ public class InsertActivity extends AppCompatActivity implements TimePickerDialo
             case R.id.set_trigerat_time:
                 mTriggetAtDate.set(Calendar.HOUR_OF_DAY, hourOfDay);
                 mTriggetAtDate.set(Calendar.MINUTE, minute);
+                mTriggetAtDate.set(Calendar.SECOND, 0);
+                mTriggetAtDate.set(Calendar.MILLISECOND, 0);
 
                 mAlarm.setTriggerAtMillis(mTriggetAtDate.getTimeInMillis());
                 btn.setText(mAlarm.getTriggerAtTimeFormat());
@@ -161,7 +165,19 @@ public class InsertActivity extends AppCompatActivity implements TimePickerDialo
         newFragment.show(getSupportFragmentManager(), "datePicker");
     }
 
+    private Boolean isExists(String filepath) {
+
+
+        if (!filepath.isEmpty()) {
+            File file = new File(filepath);
+            return file.exists();
+        }
+        return false;
+    }
+
     public void updateAlarm(View v) {
+
+
         mAlarm.setTriggerAtMillis(mTriggetAtDate.getTimeInMillis());
 
         TextInputEditText t = findViewById(R.id.set_repeat);
@@ -173,6 +189,15 @@ public class InsertActivity extends AppCompatActivity implements TimePickerDialo
 
         t = findViewById(R.id.set_filepath);
         mAlarm.setFilePath(t.getText().toString());
+
+        if (!isExists(mAlarm.getFilePath())) {
+            TextInputLayout mFileLayout = findViewById(R.id.filepath_layout);
+            String file_error = getResources().getString(R.string.file_error);
+            mFileLayout.setError(file_error);
+            mFileLayout.setErrorEnabled(true);
+
+            return;
+        }
 
         Intent intent = new Intent(BROADCAST_ACTION);
         intent.putExtras(mAlarm.toBundle());

@@ -22,11 +22,6 @@
 
         <receiver android:name=".AlarmBroadcastReceiver" />
 
-        <service
-            android:name=".AlarmService"
-            android:enabled="true"
-            android:exported="false" />
-
         <activity
             android:name=".InsertActivity"
             android:label="@string/title_activity_insert"

@@ -117,12 +117,17 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
                     final int action = extras.getInt(MainActivity.ACTION);
                     final int position = extras.getInt(MainActivity.POSITION);
 
+
                     switch (action) {
                         case MainActivity.ACTION_CREATE:
+                            mAlarmReceiver.setAlarm(getApplication(), alarmInfo);
                             DB.addAlarm(alarmInfo);
                             mAdapter.addItem(alarmInfo);
                             break;
                         case MainActivity.ACTION_UPDATE:
+                            mAlarmReceiver.cancelAlarm(getApplication(), alarmInfo);
+                            mAlarmReceiver.setAlarm(getApplication(), alarmInfo);
+
                             DB.updateAlarm(alarmInfo);
                             mAdapter.changeItem(alarmInfo, position);
                             break;
@@ -135,28 +140,25 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         this.registerReceiver(mActivityReceiver, filter);
         mAlarmReceiver = new AlarmBroadcastReceiver();
 
+        createAlarms();
         prepareCart();
+    }
+
+    private void createAlarms() {
+        GarikApp app = (GarikApp) getApplication();
+
+        for (Alarm a : DB.getNewAlarms(app.getKeys())) {
+            mAlarmReceiver.setAlarm(getApplication(), a);
+            DB.updateAlarm(a);
+        }
     }
 
     private void prepareCart() {
 
 
-        List<Alarm> alarms = DB.getAllAlarms();
-        long time = System.currentTimeMillis();
-
-        for (Alarm a : alarms) {
-            if (time <= a.getTriggerAtMillis()) {
-                Log.d(GarikApp.TAG, "alarm #" + a.getId() + ": " + a.getUniqueId());
-                mAlarmReceiver.setAlarm(getApplicationContext(), a);
-                Log.d(GarikApp.TAG, "alarm #" + a.getId() + ": " + a.getUniqueId());
-                //a.setUniqueId(alarmId);
-                //db.updateAlarm(a);
-            }
-        }
-
         // adding items to cart list
         cartList.clear();
-        cartList.addAll(alarms);
+        cartList.addAll(DB.getAllAlarms());
 
         // refreshing recycler view
         mAdapter.notifyDataSetChanged();
