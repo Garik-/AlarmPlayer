@@ -26,7 +26,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
         Bundle extras = intent.getExtras();
         if (null != extras) {
             PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-            if (null != pm) {
+            if (null != pm && 0 != extras.getInt(FIELD_ID)) {
                 PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, GarikApp.TAG);
 
                 wl.acquire(extras.getLong(FIELD_INTERVAL));
@@ -63,7 +63,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
         return intent;
     }
 
-    public Integer setAlarm(Context context, Alarm alarm) {
+    public void setAlarm(Context context, Alarm alarm) {
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (null != am) {
 
@@ -80,16 +80,17 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
             app.setAlarmCount(uniqueId, 0);
 
             Log.d(GarikApp.TAG, "Set alarm ID " + uniqueId);
-            return uniqueId;
+
 
         } else {
             Log.e(GarikApp.TAG, "getSystemService ALARM_SERVICE");
         }
 
-        return null;
+
     }
 
-    private void cancelAlarm(Context context, Intent intent, int uniqueId) {
+    public void cancelAlarm(Context context, Intent intent, int uniqueId) {
+
         PendingIntent sender = PendingIntent.getBroadcast(context, uniqueId, intent, 0);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (null != alarmManager) {
@@ -102,5 +103,10 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
         } else {
             Log.e(GarikApp.TAG, "getSystemService ALARM_SERVICE");
         }
+    }
+
+    public void cancelAlarm(Context context, Alarm alarm) {
+        Intent intent = createIntent(context, alarm);
+        cancelAlarm(context, intent, alarm.getUniqueId());
     }
 }

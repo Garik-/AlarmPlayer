@@ -121,7 +121,8 @@ public class DatabaseHandler extends SQLiteOpenHelper implements IDatabaseHandle
     @Override
     public void addAlarm(Alarm alarm) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.insert(TABLE_ALARMS, null, toValues(alarm));
+        long id = db.insert(TABLE_ALARMS, null, toValues(alarm));
+        alarm.setId((int) id);
         db.close();
     }
 

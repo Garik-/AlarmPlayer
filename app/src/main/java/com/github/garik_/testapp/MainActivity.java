@@ -1,16 +1,12 @@
 package com.github.garik_.testapp;
 
 
-import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
@@ -27,7 +23,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
 
     static final String ACTION = "action";
     static final String POSITION = "position";
@@ -37,9 +32,10 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
     private RecyclerView recyclerView;
     private List<Alarm> cartList;
     private AlarmListAdapter mAdapter;
-    private CoordinatorLayout coordinatorLayout;
 
     private BroadcastReceiver mActivityReceiver;
+    private DatabaseHandler DB;
+    private AlarmBroadcastReceiver mAlarmReceiver;
 
 
     @Override
@@ -48,23 +44,23 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         this.unregisterReceiver(this.mActivityReceiver);
     }
 
-    @SuppressLint("SdCardPath")
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         final Context context = this;
+        DB = new DatabaseHandler(this);
 
         recyclerView = findViewById(R.id.recycler_view);
-        coordinatorLayout = findViewById(R.id.coordinator_layout);
 
         cartList = new ArrayList<>();
         mAdapter = new AlarmListAdapter(this, cartList);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
 
-        recyclerView.setHasFixedSize(true);
+        //recyclerView.setHasFixedSize(true);
 
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -78,6 +74,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
                 intent.putExtras(alarm.toBundle());
                 intent.putExtra(ACTION, ACTION_UPDATE);
                 intent.putExtra(POSITION, position);
+
+                Log.d(GarikApp.TAG, "click intent position: " + position);
+
                 startActivity(intent);
             }
 
@@ -111,76 +110,59 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
         mActivityReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.d(GarikApp.TAG, "main recive");
+                Bundle extras = intent.getExtras();
+                if (null != extras) {
+                    Alarm alarmInfo = new Alarm(extras);
+
+                    final int action = extras.getInt(MainActivity.ACTION);
+                    final int position = extras.getInt(MainActivity.POSITION);
+
+                    switch (action) {
+                        case MainActivity.ACTION_CREATE:
+                            DB.addAlarm(alarmInfo);
+                            mAdapter.addItem(alarmInfo);
+                            break;
+                        case MainActivity.ACTION_UPDATE:
+                            DB.updateAlarm(alarmInfo);
+                            mAdapter.changeItem(alarmInfo, position);
+                            break;
+                    }
+                }
             }
         };
 
         IntentFilter filter = new IntentFilter(InsertActivity.BROADCAST_ACTION);
         this.registerReceiver(mActivityReceiver, filter);
+        mAlarmReceiver = new AlarmBroadcastReceiver();
 
         prepareCart();
-
-
-       /* DatabaseHandler db = new DatabaseHandler(this);
-        Alarm alarm = new Alarm("test2123", System.currentTimeMillis(), 1000 * 60, 2);
-        db.addAlarm(alarm);
-
-        alarm.setFilePath("test35345");
-        db.addAlarm(alarm);*/
-
-
-        /*
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-
-
-
-
-
-           // receiver.setAlarm(this.getApplicationContext(), new Alarm(filePath, System.currentTimeMillis(), 1000*60, 2));
-
-            DatabaseHandler db = new DatabaseHandler(this);
-
-
-            Log.d(GarikApp.TAG, "Inserting...");
-            String filePath = Environment.getExternalStorageDirectory().getPath() + "/1.mp3";
-
-            Alarm alarm = new Alarm(filePath, System.currentTimeMillis(), 1000*60, 2);
-            db.addAlarm(alarm);
-
-            List<Alarm> alarms = db.getAllAlarms();
-
-            AlarmBroadcastReceiver receiver = new AlarmBroadcastReceiver();
-
-
-            for(Alarm a : alarms) {
-                Log.d(GarikApp.TAG, "Set alarm "+a.getFilePath());
-
-                int uniqueId = receiver.setAlarm(this.getApplicationContext(), a);
-                a.setUniqueId(uniqueId);
-
-                db.updateAlarm(a);
-            }
-
-            db.deleteAll();
-        }*/
     }
 
     private void prepareCart() {
-        DatabaseHandler db = new DatabaseHandler(this);
+
+
+        List<Alarm> alarms = DB.getAllAlarms();
+        long time = System.currentTimeMillis();
+
+        for (Alarm a : alarms) {
+            if (time <= a.getTriggerAtMillis()) {
+                Log.d(GarikApp.TAG, "alarm #" + a.getId() + ": " + a.getUniqueId());
+                mAlarmReceiver.setAlarm(getApplicationContext(), a);
+                Log.d(GarikApp.TAG, "alarm #" + a.getId() + ": " + a.getUniqueId());
+                //a.setUniqueId(alarmId);
+                //db.updateAlarm(a);
+            }
+        }
 
         // adding items to cart list
         cartList.clear();
-        cartList.addAll(db.getAllAlarms());
+        cartList.addAll(alarms);
 
         // refreshing recycler view
         mAdapter.notifyDataSetChanged();
     }
 
-    /**
-     * callback when recycler view is swiped
-     * item will be removed on swiped
-     * undo option will be provided in snackbar to restore the item
-     */
+
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
         if (viewHolder instanceof AlarmListAdapter.ViewHolder) {
@@ -188,25 +170,15 @@ public class MainActivity extends AppCompatActivity implements RecyclerItemTouch
             //String name = cartList.get(viewHolder.getAdapterPosition()).getName();
 
             // backup of removed item for undo purpose
-            final Alarm deletedItem = cartList.get(viewHolder.getAdapterPosition());
             final int deletedIndex = viewHolder.getAdapterPosition();
+            final Alarm deletedItem = cartList.get(deletedIndex);
+
 
             // remove the item from recycler view
-            mAdapter.removeItem(viewHolder.getAdapterPosition());
+            mAdapter.removeItem(deletedIndex);
 
-            // showing snack bar with Undo option
-            Snackbar snackbar = Snackbar
-                    .make(coordinatorLayout, " Removed from cart!", Snackbar.LENGTH_LONG);
-            snackbar.setAction("UNDO", new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    // undo is selected, restore the deleted item
-                    mAdapter.restoreItem(deletedItem, deletedIndex);
-                }
-            });
-            snackbar.setActionTextColor(Color.YELLOW);
-            snackbar.show();
+            mAlarmReceiver.cancelAlarm(getApplicationContext(), deletedItem);
+            DB.deleteAlarm(deletedItem);
         }
     }
 }

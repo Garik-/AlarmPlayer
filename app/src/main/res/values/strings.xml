@@ -2,5 +2,10 @@
     <string name="app_name">AlarmPlayer</string>
     <string name="title_activity_insert">Настройки таймера</string>
     <string name="delete">УДАЛИТЬ</string>
-    <string name="action_settings">Настройки</string>
+    <string name="date">Дата</string>
+    <string name="time">Время</string>
+    <string name="interval">Интервал</string>
+    <string name="repeatCount">Количество повторений</string>
+    <string name="file">Файл</string>
+    <string name="done">Готово</string>
 </resources>

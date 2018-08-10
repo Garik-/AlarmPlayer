@@ -27,9 +27,7 @@ https://www.androidhive.info/2017/09/android-recyclerview-swipe-delete-undo-usin
 
 public class AlarmListAdapter extends RecyclerView.Adapter<AlarmListAdapter.ViewHolder> {
 
-    private Context context;
     private List<Alarm> alarmList;
-
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -49,8 +47,6 @@ public class AlarmListAdapter extends RecyclerView.Adapter<AlarmListAdapter.View
 
     public AlarmListAdapter(Context context, List<Alarm> alarmList) {
         this.alarmList = alarmList;
-
-        this.context = context;
     }
 
     @Override
@@ -82,9 +78,14 @@ public class AlarmListAdapter extends RecyclerView.Adapter<AlarmListAdapter.View
         notifyItemRemoved(position);
     }
 
-    public void restoreItem(Alarm item, int position) {
-        alarmList.add(position, item);
-        // notify item added by position
+    public void changeItem(Alarm item, int position) {
+        alarmList.set(position, item);
+        notifyItemChanged(position);
+    }
+
+    public void addItem(Alarm item) {
+        alarmList.add(item);
+        int position = alarmList.size() - 1;
         notifyItemInserted(position);
     }
 }

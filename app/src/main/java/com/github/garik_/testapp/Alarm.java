@@ -71,13 +71,13 @@ public class Alarm {
     public String getTriggerAtDateFormat() {
         return getFormatDate(this.triggerAtMillis, "dd/MM");
     }
-
     public String getTriggerAtTimeFormat() {
         return getFormatDate(this.triggerAtMillis, "HH:mm");
     }
 
     public Alarm() {
-
+        this.intervalMillis = 5 * 60000;
+        this.repeatCount = 1;
     }
 
     public Alarm(String filePath, long triggerAtMillis, long intervalMillis, int repeatCount) {
@@ -110,23 +110,18 @@ public class Alarm {
     public String getFilePath() {
         return this.filePath;
     }
-
     public int getRepeatCount() {
         return this.repeatCount;
     }
-
     public long getTriggerAtMillis() {
         return this.triggerAtMillis;
     }
-
     public long getIntervalMillis() {
         return this.intervalMillis;
     }
-
     public int getUniqueId() {
         return this.uniqueId;
     }
-
     public int getId() {
         return this.id;
     }
@@ -134,30 +129,25 @@ public class Alarm {
     public void setId(int id) {
         this.id = id;
     }
-
     public void setUniqueId(int uniqueId) {
         this.uniqueId = uniqueId;
     }
-
     public void setFilePath(String filePath) {
         this.filePath = filePath;
     }
-
     public void setTriggerAtMillis(long triggerAtMillis) {
         this.triggerAtMillis = triggerAtMillis;
     }
-
     public void setIntervalMillis(long intervalMillis) {
         this.intervalMillis = intervalMillis;
     }
-
     public void setRepeatCount(int repeatCount) {
         this.repeatCount = repeatCount;
     }
 
     public String getRepeatCountFormat() {
         StringBuilder sb = new StringBuilder("Повторять " + this.repeatCount + " ");
-        switch (this.plural(Long.valueOf(this.repeatCount))) {
+        switch (this.plural(this.repeatCount)) {
             case 0:
             case 2:
                 sb.append("раз");

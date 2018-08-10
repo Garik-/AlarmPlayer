@@ -68,7 +68,7 @@ public class AlarmItemFragment extends Fragment {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
 
-            DatabaseHandler db = new DatabaseHandler(context);
+            // DatabaseHandler db = new DatabaseHandler(context);
             // recyclerView.setAdapter(new AlarmListAdapter(db.getAllAlarms(), mListener));
         }
         return view;

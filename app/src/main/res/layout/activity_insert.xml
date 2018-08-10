@@ -58,7 +58,7 @@
                     android:layout_weight="1"
                     android:onClick="showTimePickerDialog"
 
-                    android:text="Время" />
+                    android:text="@string/date" />
 
 
             </LinearLayout>
@@ -69,7 +69,7 @@
                 android:layout_height="wrap_content"
                 android:onClick="showTimePickerDialog"
 
-                android:text="Интервал" />
+                android:text="@string/interval" />
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -79,7 +79,7 @@
                     android:id="@+id/set_repeat"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Количество повторений"
+                    android:hint="@string/repeatCount"
                     android:inputType="number" />
 
             </android.support.design.widget.TextInputLayout>
@@ -92,7 +92,7 @@
                     android:id="@+id/set_filepath"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Файл" />
+                    android:hint="@string/file" />
 
             </android.support.design.widget.TextInputLayout>
         </LinearLayout>
@@ -105,7 +105,7 @@
             android:layout_alignParentBottom="true"
             android:background="?attr/colorPrimary"
             android:onClick="updateAlarm"
-            android:text="Готово"
+            android:text="@string/done"
             android:textColor="@android:color/white" />
     </RelativeLayout>
 

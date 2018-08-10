@@ -10,6 +10,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.Button;
@@ -164,7 +165,11 @@ public class InsertActivity extends AppCompatActivity implements TimePickerDialo
         mAlarm.setTriggerAtMillis(mTriggetAtDate.getTimeInMillis());
 
         TextInputEditText t = findViewById(R.id.set_repeat);
-        mAlarm.setRepeatCount(Integer.parseInt(t.getText().toString()));
+        String s = t.getText().toString();
+
+        if (!TextUtils.isEmpty(s)) {
+            mAlarm.setRepeatCount(Integer.parseInt(s));
+        }
 
         t = findViewById(R.id.set_filepath);
         mAlarm.setFilePath(t.getText().toString());
