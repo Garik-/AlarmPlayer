@@ -107,9 +107,9 @@ public class InsertActivity extends AppCompatActivity implements TimePickerDialo
         DialogProperties properties = new DialogProperties();
         properties.selection_mode = DialogConfigs.SINGLE_MODE;
         properties.selection_type = DialogConfigs.FILE_SELECT;
-        properties.root = new File("/");
-        properties.error_dir = new File("/");
-        properties.offset = new File("/");
+        properties.root = new File(DialogConfigs.DEFAULT_DIR);
+        properties.error_dir = new File(DialogConfigs.DEFAULT_DIR);
+        properties.offset = new File(DialogConfigs.DEFAULT_DIR);
         properties.extensions = new String[]{"mp3"};
         dialog = new FilePickerDialog(this,properties);
         dialog.setTitle("Выбрать mp3 файл");
