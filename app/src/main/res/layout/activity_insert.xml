@@ -47,7 +47,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="showDatePickerDialog"
-                    
+
 
                     android:text="Дата" />
 
@@ -80,16 +80,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/repeatCount"
+                    android:inputType="number"
                     android:lines="1"
                     android:maxLines="1"
-                    android:singleLine="true"
-                    android:inputType="number" />
+                    android:singleLine="true" />
 
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
                 android:id="@+id/filepath_layout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
 
                 >
@@ -99,11 +99,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
 
+                    android:hint="@string/file"
                     android:lines="1"
                     android:maxLines="1"
-                    android:singleLine="true"
+                    android:focusable="false"
 
-                    android:hint="@string/file" />
+                    android:singleLine="true" />
 
             </android.support.design.widget.TextInputLayout>
         </LinearLayout>

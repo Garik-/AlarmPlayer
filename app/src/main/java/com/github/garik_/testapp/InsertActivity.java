@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
@@ -17,6 +18,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
+import android.widget.Toast;
+
+import com.github.angads25.filepicker.controller.DialogSelectionListener;
+import com.github.angads25.filepicker.model.DialogConfigs;
+import com.github.angads25.filepicker.model.DialogProperties;
+import com.github.angads25.filepicker.view.FilePickerDialog;
 
 import java.io.File;
 import java.util.Calendar;
@@ -32,6 +39,7 @@ public class InsertActivity extends AppCompatActivity implements TimePickerDialo
 
     private int timeViewId;
     private Calendar mTriggetAtDate;
+    FilePickerDialog  dialog;
 
 
     @Override
@@ -93,7 +101,56 @@ public class InsertActivity extends AppCompatActivity implements TimePickerDialo
             }
         });*/
 
+        final TextInputEditText fileText = findViewById(R.id.set_filepath);
+        //fileText.setEnabled(false);
 
+        DialogProperties properties = new DialogProperties();
+        properties.selection_mode = DialogConfigs.SINGLE_MODE;
+        properties.selection_type = DialogConfigs.FILE_SELECT;
+        properties.root = new File("/");
+        properties.error_dir = new File("/");
+        properties.offset = new File("/");
+        properties.extensions = new String[]{"mp3"};
+        dialog = new FilePickerDialog(this,properties);
+        dialog.setTitle("Выбрать mp3 файл");
+
+        dialog.setDialogSelectionListener(new DialogSelectionListener() {
+            @Override
+            public void onSelectedFilePaths(String[] files) {
+                //mAlarm.setFilePath(files[0]);
+                fileText.setText(files[0]);
+            }
+        });
+
+        fileText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.show();
+            }
+        });
+
+
+
+
+    }
+
+    //Add this method to show Dialog when the required permission has been granted to the app.
+    @Override
+    public void onRequestPermissionsResult(int requestCode,String permissions[],int[] grantResults) {
+        switch (requestCode) {
+            case FilePickerDialog.EXTERNAL_READ_PERMISSION_GRANT: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if(dialog!=null)
+                    {   //Show dialog if the read permission has been granted.
+                        dialog.show();
+                    }
+                }
+                else {
+                    //Permission has not been granted. Notify the user.
+                    Toast.makeText(this,"Permission is Required for getting list of files", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
     }
 
     public void showTimePickerDialog(View v) {
